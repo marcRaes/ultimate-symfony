@@ -2,6 +2,7 @@
 
 namespace App\Cart;
 
+use App\Cart\CartItem;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -31,6 +32,12 @@ class CartService
     protected function saveCart(array $cart)
     {
         $this->session->set('cart', $cart);
+    }
+
+    public function empty()
+    {
+        // Aura pour effet de vider le panier dans la session
+        $this->saveCart([]);
     }
 
     public function add(int $id)
@@ -97,6 +104,9 @@ class CartService
         return $total;
     }
 
+    /**
+     * @return CartItem[]
+     */
     public function getDetailedCartItems(): array
     {
         $detailedCart = [];
