@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 
 class PurchaseConfirmationController extends AbstractController
 {
@@ -18,7 +19,7 @@ class PurchaseConfirmationController extends AbstractController
      * @Route("/purchase/confirm", name="purchase_confirm")
      * @IsGranted("ROLE_USER", message="Vous devez être connecté pour confirmer une commande")
      */
-    public function confirm(Request $request, CartService $cartService, PurchasePersister $persister)
+    public function confirm(Request $request, CartService $cartService, PurchasePersister $persister): Response
     {
         // 1. Nous voulons lire les données du formulaire
         $form = $this->createForm(CartConfirmationType::class);
@@ -46,9 +47,8 @@ class PurchaseConfirmationController extends AbstractController
 
         $persister->storePurchase($purchase);
 
-        $cartService->empty();
-
-        $this->addFlash('success', "La commande à bien été enregistrée");
-        return $this->redirectToRoute('purchase_index');
+        return $this->redirectToRoute('purchase_payment_form', [
+            'id' => $purchase->getId()
+        ]);
     }
 }
