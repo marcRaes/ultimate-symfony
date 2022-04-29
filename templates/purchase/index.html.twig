@@ -29,13 +29,11 @@
 								<li>{{ item.quantity }}
 									x
 									{{ item.productName }}
-									({{ item.total / 100 }}
-									€)</li>
+									({{ item.total | amount }})</li>
 							{% endfor %}
 						</ul>
 					</td>
-					<td>{{ purchase.total / 100 }}
-						€</td>
+					<td>{{ purchase.total | amount }}</td>
 				</tr>
 			{% endfor %}
 		</tbody>
