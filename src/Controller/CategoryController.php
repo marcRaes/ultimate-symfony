@@ -35,15 +35,13 @@ class CategoryController extends AbstractController
     /**
      * @Route("/admin/category/create", name="category_create")
      */
-    public function create(Request $request, SluggerInterface $slugger, EntityManagerInterface $em): Response
+    public function create(Request $request, EntityManagerInterface $em): Response
     {
         $category = new Category;
         $form = $this->createForm(CategoryType::class, $category);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $category->setSlug(strtolower($slugger->slug($category->getName())));
-
             $em->persist($category);
             $em->flush();
 

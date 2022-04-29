@@ -24,9 +24,7 @@ class PurchasePersister
     public function storePurchase(Purchase $purchase)
     {
         // 1. Nous allons la lier avec l'utilisateur actuellement connecté
-        $purchase->setUser($this->security->getUser())
-            ->setPurchasedAt(new DateTime())
-            ->setTotal($this->cartService->getTotal());
+        $purchase->setUser($this->security->getUser());
 
         $this->em->persist($purchase);
 

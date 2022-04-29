@@ -74,6 +74,11 @@ class PurchaseItem
     {
         $this->purchase = $purchase;
 
+        // Si la ligne de produit n'est pas encore dans la commande
+        if (!$purchase->getPurchaseItems()->contains($this)) {
+            $purchase->addPurchaseItem($this);
+        }
+
         return $this;
     }
 

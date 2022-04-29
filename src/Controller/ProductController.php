@@ -3,11 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Event\ProductViewEvent;
 use App\Form\ProductType;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -38,7 +40,7 @@ class ProductController extends AbstractController
     /**
      * @Route("/{category_slug}/{slug}", name="product_show", priority=-1)
      */
-    public function show($slug, ProductRepository $productRepository, Request $request): Response
+    public function show($slug, ProductRepository $productRepository, EventDispatcherInterface $dispatcher): Response
     {
         $product = $productRepository->findOneBy([
             'slug' => $slug
@@ -49,6 +51,10 @@ class ProductController extends AbstractController
             throw $this->createNotFoundException("Le produit demandé n'existe pas");
         }
 
+        // Envoi un email lorsqu'un visiteur affiche la page d'un produit
+        $productEvent = new ProductViewEvent($product);
+        $dispatcher->dispatch($productEvent, 'product.view');
+
         return $this->render("product/show.html.twig", [
             'product' => $product
         ]);
@@ -57,7 +63,7 @@ class ProductController extends AbstractController
     /**
      * @Route("/admin/product/create", name="product_create")
      */
-    public function create(Request $request, SluggerInterface $slugger, EntityManagerInterface $em): Response
+    public function create(Request $request, EntityManagerInterface $em): Response
     {
         $product = new Product;
         $form = $this->createForm(ProductType::class, $product);
@@ -65,8 +71,6 @@ class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $product->setSlug(strtolower($slugger->slug($product->getName())));
-
             $em->persist($product);
             $em->flush();
 
