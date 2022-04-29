@@ -43,15 +43,6 @@ services:
             $secretKey: "%env(STRIPE_SECRET_KEY)%"
             $publicKey: "%env(STRIPE_PUBLIC_KEY)%"
 
-    App\Doctrine\Listener\ProductSlugListener:
-        tags: [
-            {
-                name: 'doctrine.orm.entity_listener',
-                event: prePersist,
-                entity: App\Entity\Product
-            }
-        ]
-
     App\Doctrine\Listener\CategorySlugListener:
         tags: [
             {
