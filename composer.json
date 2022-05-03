@@ -77,7 +77,8 @@
             "@database-setup"
         ],
         "post-update-cmd": [
-            "@auto-scripts"
+            "@auto-scripts",
+            "@database-setup"
         ]
     },
     "conflict": {
